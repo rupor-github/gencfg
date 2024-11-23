@@ -55,8 +55,8 @@ from single template.
 Reading database user/password from environment and if not set from Vault:
 
     db:
-        username: "{{ default (vaultGet \"services/servicename/environments/prod/mysql-consoledb/app_user_ro\" \"user\") (env \"DB_USERNAME\") }}"
-        password: "{{ default (vaultGet \"services/servicename/environments/prod/mysql-consoledb/app_user_ro\" .Name) (env \"DB_PASSWORD\") }}"
+        username: '{{ default "user" (env "DB_USERNAME") }}'
+        password: '{{ default "pass" (env "DB_PASSWORD") }}'
 
 Setting parameters for logging from environment:
 
