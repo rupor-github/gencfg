@@ -7,7 +7,7 @@ vars:
 
   BUILD_DIR: 'build'
   # not sure how else to version tools which need to be build as part of different project
-  PRJ_VERSION: '{{default "v1.0.0" (env "PRJ_VERSION")}}'
+  PRJ_VERSION: '{{default "v1.0.1" (env "PRJ_VERSION")}}'
 
   GO_VERSION_MIN_REQUIRED: '1.23.3'
 

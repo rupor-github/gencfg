@@ -145,12 +145,19 @@ func sanitizeValue(elem reflect.Value, name, tags string) error {
 			if kind != reflect.String {
 				return fmt.Errorf("sanitize tag '%s' on '%s' only works on strings", tagKeyValue[0], name)
 			}
+			path := elem.String()
+			if len(path) == 0 {
+				return nil
+			}
 			elem.SetString(filepath.Clean(elem.String()))
 		case "assure_dir_exists":
 			if kind != reflect.String {
 				return fmt.Errorf("sanitize tag '%s' on '%s' only works on strings", tagKeyValue[0], name)
 			}
 			dir := elem.String()
+			if len(dir) == 0 {
+				return nil
+			}
 			if err := os.MkdirAll(dir, 0777); err != nil {
 				return fmt.Errorf("failed to create directory '%s': %w", dir, err)
 			}
@@ -159,6 +166,9 @@ func sanitizeValue(elem reflect.Value, name, tags string) error {
 				return fmt.Errorf("sanitize tag '%s' on '%s' only works on strings", tagKeyValue[0], name)
 			}
 			dir := filepath.Dir(elem.String())
+			if len(dir) == 0 {
+				return nil
+			}
 			if err := os.MkdirAll(dir, 0777); err != nil {
 				return fmt.Errorf("failed to create directory '%s': %w", dir, err)
 			}
