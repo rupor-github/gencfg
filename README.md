@@ -29,6 +29,8 @@ from single template.
 	.Containerized (bool) - true if code is executed in container
     .Testing (bool) - true if expansion happens when code is being run with "go test"
     .CPUs (int) - Go's runtime.NumCPU()
+    .OS (string) - Go's runtime.GOOS
+    .ARCH (string) - Go's runtime.GOARCH
 
 ## Functions defined by project
 

@@ -20,6 +20,8 @@ type Values struct {
 	Containerized bool
 	Testing       bool
 	CPUs          int
+	ARCH          string
+	OS            string
 }
 
 // expandField expands a field using the given name and field string, for example
@@ -50,6 +52,8 @@ func expandField(name, field string, opts *ProcessingOptions) (string, error) {
 		ProjectDir: opts.rootDir,
 		Testing:    testing.Testing(),
 		CPUs:       runtime.NumCPU(),
+		ARCH:       runtime.GOARCH,
+		OS:         runtime.GOOS,
 	}
 	if values.Hostname, err = os.Hostname(); err != nil {
 		return "", err
