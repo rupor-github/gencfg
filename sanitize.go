@@ -150,6 +150,15 @@ func sanitizeValue(elem reflect.Value, name, tags string) error {
 				return nil
 			}
 			elem.SetString(filepath.Clean(elem.String()))
+		case "path_toslash":
+			if kind != reflect.String {
+				return fmt.Errorf("sanitize tag '%s' on '%s' only works on strings", tagKeyValue[0], name)
+			}
+			path := elem.String()
+			if len(path) == 0 {
+				return nil
+			}
+			elem.SetString(filepath.ToSlash(elem.String()))
 		case "assure_dir_exists":
 			if kind != reflect.String {
 				return fmt.Errorf("sanitize tag '%s' on '%s' only works on strings", tagKeyValue[0], name)
