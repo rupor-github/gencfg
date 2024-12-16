@@ -104,6 +104,7 @@ Presently defined actions:
 
     path_clean - same as calling filepath.Clean(value) on the configuration field
     path_toslash - same as calling filepath.ToSlash(value) on the configuration field
+    path_abs - same as calling filepath.Abs(value) on the configuration field
     assure_dir_exists - will call os.MkdirAll(value), not changing field itself
     assure_dir_exists_for_file - will call os.MkdirAll(filepath.Dir(value)), not changing field itself
 

@@ -149,7 +149,20 @@ func sanitizeValue(elem reflect.Value, name, tags string) error {
 			if len(path) == 0 {
 				return nil
 			}
-			elem.SetString(filepath.Clean(elem.String()))
+			elem.SetString(filepath.Clean(path))
+		case "path_abs":
+			if kind != reflect.String {
+				return fmt.Errorf("sanitize tag '%s' on '%s' only works on strings", tagKeyValue[0], name)
+			}
+			path := elem.String()
+			if len(path) == 0 {
+				return nil
+			}
+			apath, err := filepath.Abs(path)
+			if err != nil {
+				return fmt.Errorf("failed to get absolute path for '%s': %w", path, err)
+			}
+			elem.SetString(apath)
 		case "path_toslash":
 			if kind != reflect.String {
 				return fmt.Errorf("sanitize tag '%s' on '%s' only works on strings", tagKeyValue[0], name)
@@ -158,7 +171,7 @@ func sanitizeValue(elem reflect.Value, name, tags string) error {
 			if len(path) == 0 {
 				return nil
 			}
-			elem.SetString(filepath.ToSlash(elem.String()))
+			elem.SetString(filepath.ToSlash(path))
 		case "assure_dir_exists":
 			if kind != reflect.String {
 				return fmt.Errorf("sanitize tag '%s' on '%s' only works on strings", tagKeyValue[0], name)
