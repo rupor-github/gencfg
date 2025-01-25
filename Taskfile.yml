@@ -6,10 +6,16 @@ silent: true
 vars:
 
   BUILD_DIR: 'build'
-  # not sure how else to version tools which need to be build as part of different project
-  PRJ_VERSION: '{{default "v1.0.1" (env "PRJ_VERSION")}}'
 
-  GO_VERSION_MIN_REQUIRED: '1.23.3'
+  # This project uses misc/version.go as part of gencfg CLI tool because the whole
+  # package is imported into other project and tool is build there, but we still need
+  # to show proper version - let's deduce tag for next version automatically here,
+  # otherwise it is easy to forget and we are always out of sync...
+  # 
+  # for proper autotag see https://github.com/rupor-github/fork-autotag
+  PRJ_VERSION: {sh: autotag -C -n}
+
+  GO_VERSION_MIN_REQUIRED: '1.23'
 
   GO_VERSION_FULL: {sh: go version}
   GO_VERSION: '{{regexFind "[0-9]+\\.[0-9]+\\.?[0-9]*" (regexFind "go version go[0-9]+\\.[0-9]+\\.?[0-9]*[a-zA-Z0-9]* [^/]+/.*" .GO_VERSION_FULL)}}'
@@ -21,7 +27,7 @@ vars:
 env:
   CGO_ENABLED: '0'
   GOPATH: '{{default "/tmp/gopkg_gencfg_{{.GO_VERSION}}" (env "GOPATH")}}'
-  # After go1.21 lock everything to locally installed go version to prevent automatic caching and usage of multiple go versions
+  # lock everything to locally installed go version to prevent automatic caching and usage of multiple go versions
   GOTOOLCHAIN: 'local+path'
 
 tasks:
@@ -195,6 +201,10 @@ tasks:
     vars:
       DIR: '{{.ROOT_DIR}}/misc'
       FILE: '{{.DIR}}/version.go'
+      GIT_HASH:
+        sh: git rev-list -1 HEAD || true
+      GIT_STATUS:
+        sh: git diff --shortstat
     cmds:
       - echo "{{.TATN}}Project version {{.PRJ_VERSION}}, git {{.GIT_HASH}}{{if .GIT_STATUS}}*{{end}}{{.TOFF}}"
       - mkdir -p {{.DIR}}

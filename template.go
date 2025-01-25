@@ -8,7 +8,7 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/go-task/slim-sprig/v3"
+	sprig "github.com/go-task/slim-sprig/v3"
 )
 
 // Values is a struct that holds variables we make available for template expantion

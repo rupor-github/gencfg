@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"sort"
 
-	"github.com/urfave/cli/v2"
+	cli "github.com/urfave/cli/v2"
 
 	"github.com/rupor-github/gencfg"
 	"github.com/rupor-github/gencfg/misc"

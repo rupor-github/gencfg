@@ -5,7 +5,7 @@ import (
 	"os"
 	"regexp"
 
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 )
 
 // ProcessingOptions holds options for expanding configuration files.
