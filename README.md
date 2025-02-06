@@ -31,6 +31,7 @@ from single template.
     .CPUs (int) - Go's runtime.NumCPU()
     .OS (string) - Go's runtime.GOOS
     .ARCH (string) - Go's runtime.GOARCH
+    .Agguments (map[strting]string) - could be passed to Process() using .WithArgument(name,value) calls
 
 ## Functions defined by project
 
@@ -138,11 +139,11 @@ function to perform additional checks.
     .........
 
 	if err := gencfg.Sanitize(&cfg); err != nil {
-		// Prossing sanitization errors here
+		// Processing sanitization errors here
         .........
 	}
 	if err := gencfg.Validate(&cfg, gencfg.WithAdditionalChecks(additionalChecks)); err != nil {
-		// Prossing validation errors here
+		// Processing validation errors here
         .........
 	}
 

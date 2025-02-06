@@ -11,6 +11,7 @@ import (
 // ProcessingOptions holds options for expanding configuration files.
 type ProcessingOptions struct {
 	rootDir string
+	args    map[string]string
 }
 
 // WithRootDir sets root directory for template expansion.
@@ -18,6 +19,15 @@ type ProcessingOptions struct {
 func WithRootDir(rootDir string) func(*ProcessingOptions) {
 	return func(opts *ProcessingOptions) {
 		opts.rootDir = rootDir
+	}
+}
+
+func WithArgument(name, value string) func(*ProcessingOptions) {
+	return func(opts *ProcessingOptions) {
+		if opts.args == nil {
+			opts.args = make(map[string]string)
+		}
+		opts.args[name] = value
 	}
 }
 
