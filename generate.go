@@ -22,6 +22,7 @@ func WithRootDir(rootDir string) func(*ProcessingOptions) {
 	}
 }
 
+// WithArgument sets additional arguments for template expansion.
 func WithArgument(name, value string) func(*ProcessingOptions) {
 	return func(opts *ProcessingOptions) {
 		if opts.args == nil {
