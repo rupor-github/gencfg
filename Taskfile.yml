@@ -4,22 +4,21 @@ output: 'group'
 silent: true
 
 vars:
-
   BUILD_DIR: 'build'
 
+  PRJ_NAME: 'github.com/rupor-github/gencfg'
   # This project uses misc/version.go as part of gencfg CLI tool because the whole
   # package is imported into other project and tool is build there, but we still need
   # to show proper version - let's deduce tag for next version automatically here,
   # otherwise it is easy to forget and we are always out of sync...
-  # 
+  #
   # for proper autotag see https://github.com/rupor-github/fork-autotag
   PRJ_VERSION: {sh: autotag -C -n}
 
-  GO_VERSION_MIN_REQUIRED: '1.23'
+  GO_VERSION_MIN_REQUIRED: '1.24.0'
 
-  GO_VERSION_FULL: {sh: go version}
+  GO_VERSION_FULL: {sh: GOTOOLCHAIN=local+path go version}
   GO_VERSION: '{{regexFind "[0-9]+\\.[0-9]+\\.?[0-9]*" (regexFind "go version go[0-9]+\\.[0-9]+\\.?[0-9]*[a-zA-Z0-9]* [^/]+/.*" .GO_VERSION_FULL)}}'
-  GO_VERSION_LANG: '{{regexFind "[0-9]+\\.[0-9]+" .GO_VERSION}}'
 
   TATN: {sh: '{{if (env "TERM")}}tput setaf 4{{end}}'}
   TOFF: {sh: '{{if (env "TERM")}}tput sgr0{{end}}'}
@@ -90,42 +89,33 @@ tasks:
   lint:
     internal: true
     desc: Lints the whole project
-    vars:
-      LINTER: '{{.BUILD_DIR}}/staticcheck'
     cmds:
-      - task: build-linter
-        vars: {LINTER: '{{.LINTER}}'}
       - echo "{{.TATN}}Linting project{{.TOFF}}"
-      - ./{{.LINTER}} -f stylish -tests=false ./...
-    sources:
-      - ./**/*.go
-      - ./go.sum
-      - ./go.mod
+      - go tool staticcheck -f stylish -tests=true ./...
+
+  go-modinit:
+    desc: Using current toolchain (re)initializes go.mod with provided module name, gets latest versions and runs tidy
+    aliases: [modinit]
+    prompt: This will replace your existing go.mod and go.sum if you have any. Do you want to continue?
+    requires:
+      vars: [GO_VERSION]
+    cmds:
+      - echo "{{.TATN}}Running go mod init for \"{{.PRJ_NAME}}\" with {{.GO_VERSION}}{{.TOFF}}"
+      - |
+        [ -f {{.ROOT_DIR}}/go.mod ] && rm {{.ROOT_DIR}}/go.mod || true
+        [ -f {{.ROOT_DIR}}/go.sum ] && rm {{.ROOT_DIR}}/go.sum || true
+      - go mod init {{.PRJ_NAME}}
+      - go mod edit -go {{.GO_VERSION}} -toolchain go{{.GO_VERSION}}
+      - go get -tool honnef.co/go/tools/cmd/staticcheck
+      - go get -u ./...
+      - go mod tidy {{.CLI_ARGS}}
 
   go-tidy:
     desc: Tidy Go modules for the project
     aliases: [tidy]
-    deps: [check-go-version]
-    vars:
-      SUPPORTED_GO_VER: '{{default "" (regexFind "[0-9]+\\.[0-9]+" .GO_VERSION_MIN_REQUIRED)}}'
     cmds:
-      - echo "{{.TATN}}Running go tidy with{{if .SUPPORTED_GO_VER}} -go={{.SUPPORTED_GO_VER}}{{end}}{{.TOFF}}"
-      - go mod tidy{{if .SUPPORTED_GO_VER}} -go={{.SUPPORTED_GO_VER}}{{end}}
-
-  build-linter:
-    internal: true
-    desc: Builds linter for the project
-    requires:
-      vars: [LINTER]
-    cmds:
-      - task: go-build-tool
-        vars: {PACKAGE: 'honnef.co/go/tools/cmd/staticcheck', TARGET: '{{.LINTER}}'}
-    sources:
-      - tools/tools.go
-      - go.mod
-      - go.sum
-    generates:
-      - '{{.LINTER}}'
+      - echo "{{.TATN}}Running go tidy{{.TOFF}}"
+      - go mod tidy {{.CLI_ARGS}}
 
   compile-all-tests:
     internal: true
@@ -165,7 +155,7 @@ tasks:
         {{- else if eq .FLAG "release" -}}
           -mod=mod -trimpath
         {{- else -}}
-        {{fail "go build flags could be \"debug\", \"release\" or \"xtool\" only!"}}
+        {{fail "go build flags could be \"debug\" or \"release\" only!"}}
         {{- end -}}
     cmds:
       - echo "{{.TATN}}Building \"{{base .TARGET}}\" binary from \"{{.PACKAGE}}\"{{.TOFF}}"
@@ -178,21 +168,6 @@ tasks:
       # NOTE: since we are using the same build directory for debug and release builds of the same binary (different
       # compiler options the same sources) we need an additional check here
       - go version -m '{{.TARGET}}' | grep -q -e '-tags={{.FLAG}}'
-
-  go-build-tool:
-    internal: true
-    run: when_changed
-    desc: Builds binary using go toolchain.
-    label: go-build-tool-{{.PACKAGE}}-{{.TARGET}}
-    requires:
-      vars: [PACKAGE, TARGET]
-    cmds:
-      - echo "{{.TATN}}Building \"{{base .TARGET}}\" binary from \"{{.PACKAGE}}\"{{.TOFF}}"
-      - go build -mod=mod -trimpath -o '{{.TARGET}}' '{{.PACKAGE}}'
-    sources:
-      - ./**/*.go
-    generates:
-      - '{{.TARGET}}'
 
   generate-project-versions:
     internal: true
