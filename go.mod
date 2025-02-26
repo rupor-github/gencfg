@@ -2,7 +2,10 @@ module github.com/rupor-github/gencfg
 
 go 1.24.0
 
-tool honnef.co/go/tools/cmd/staticcheck
+tool (
+	github.com/rupor-github/fork-autotag/autotag
+	honnef.co/go/tools/cmd/staticcheck
+)
 
 require (
 	github.com/go-playground/validator/v10 v10.25.0
@@ -17,7 +20,12 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/gogs/git-module v1.8.4 // indirect
+	github.com/hashicorp/go-version v1.7.0 // indirect
+	github.com/jessevdk/go-flags v1.6.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
+	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2 // indirect
+	github.com/rupor-github/fork-autotag v1.3.36 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	golang.org/x/crypto v0.35.0 // indirect
