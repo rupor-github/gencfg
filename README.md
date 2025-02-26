@@ -73,7 +73,7 @@ Setting parameters for logging from environment:
 Since application configuration structures defined in Go by creating struct
 types with declarative tags it makes sense to build on that as much as
 possible. Presently this module offers two additional declarative capabilities:
-"Sanitize" and "Validate" which used similarly to how L tags assigned to
+"Sanitize" and "Validate" which used similarly to how YAML serde tags assigned to
 configuration struct fields.
 
 ## Sanitizing configuration values
