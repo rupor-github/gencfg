@@ -13,7 +13,7 @@ vars:
   # otherwise it is easy to forget and we are always out of sync...
   PRJ_VERSION: {sh: GOTOOLCHAIN=local+path go tool autotag -C -n}
 
-  GO_VERSION_MIN_REQUIRED: '1.24.0'
+  GO_VERSION_MIN_REQUIRED: '1.24.1'
 
   GO_VERSION_FULL: {sh: GOTOOLCHAIN=local+path go version}
   GO_VERSION: '{{regexFind "[0-9]+\\.[0-9]+\\.?[0-9]*" (regexFind "go version go[0-9]+\\.[0-9]+\\.?[0-9]*[a-zA-Z0-9]* [^/]+/.*" .GO_VERSION_FULL)}}'
@@ -112,9 +112,11 @@ tasks:
   go-tidy:
     desc: Tidy Go modules for the project
     aliases: [tidy]
+    requires:
+      vars: [GO_VERSION]
     cmds:
       - echo "{{.TATN}}Running go tidy{{.TOFF}}"
-      - go mod tidy {{.CLI_ARGS}}
+      - go mod tidy -go={{.GO_VERSION}} {{.CLI_ARGS}}
 
   compile-all-tests:
     internal: true
