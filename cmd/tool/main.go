@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -9,9 +10,8 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"sort"
 
-	cli "github.com/urfave/cli/v2"
+	cli "github.com/urfave/cli/v3"
 
 	"github.com/rupor-github/gencfg"
 	"github.com/rupor-github/gencfg/misc"
@@ -21,20 +21,7 @@ const errorCode = 1
 
 func main() {
 
-	cli.AppHelpTemplate = `
-NAME:
-   {{.Name}} - {{.Usage}}
-
-USAGE:
-   {{.HelpName}} {{if .VisibleFlags}}[options]{{end}} {{if .ArgsUsage}}{{.ArgsUsage}}{{else}}TEMPLATE [DESTINATION]{{end}}
-   {{if .VisibleFlags}}
-OPTIONS:
-   {{range .VisibleFlags}}{{.}}
-   {{end}}{{end}}
-NOTE:
-   when run with redirected Stdout tool would not ask for Vault credentials even if new token is needed.
-`
-	app := &cli.App{
+	app := &cli.Command{
 		Name:    misc.AppName,
 		Usage:   "generate configuration file from template",
 		Version: misc.GetVersion() + " (" + runtime.Version() + ")",
@@ -44,10 +31,15 @@ NOTE:
 				Aliases: []string{"d"},
 				Usage:   "Project directory to use for expansion (default is current directory)",
 			},
+			&cli.StringSliceFlag{
+				Name:    "literal",
+				Aliases: []string{"l"},
+				Usage:   "Name of the field(s) not to be treated as template",
+			},
 		},
-		Action: func(cCtx *cli.Context) error {
+		Action: func(ctx context.Context, cmd *cli.Command) error {
 
-			tmplPath := cCtx.Args().Get(0)
+			tmplPath := cmd.Args().Get(0)
 			if len(tmplPath) == 0 {
 				return cli.Exit(errors.New("no template file has been specified"), errorCode)
 			}
@@ -62,12 +54,19 @@ NOTE:
 			if len(tmpl) == 0 {
 				return cli.Exit(errors.New("template file is empty"), errorCode)
 			}
-			cnf, err := gencfg.Process(tmpl, gencfg.WithRootDir(cCtx.String("project-dir")))
+
+			options := make([]func(*gencfg.ProcessingOptions), 0, 16)
+			options = append(options, gencfg.WithRootDir(cmd.String("project-dir")))
+			for _, literal := range cmd.StringSlice("literal") {
+				options = append(options, gencfg.WithDoNotExpandField(literal))
+			}
+
+			cnf, err := gencfg.Process(tmpl, options...)
 			if err != nil {
 				return cli.Exit(fmt.Errorf("unable to generate configuration: %w", err), errorCode)
 			}
 			cnfFile := os.Stdout
-			cnfPath := cCtx.Args().Get(1)
+			cnfPath := cmd.Args().Get(1)
 			if len(cnfPath) != 0 {
 				cnfFile, err = os.Create(cnfPath)
 				if err != nil {
@@ -83,8 +82,7 @@ NOTE:
 		},
 	}
 
-	sort.Sort(cli.FlagsByName(app.Flags))
-	if err := app.Run(os.Args); err != nil {
+	if err := app.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)
 	}
 }
