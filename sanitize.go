@@ -194,6 +194,17 @@ func sanitizeValue(elem reflect.Value, name, tags string) error {
 			if err := os.MkdirAll(dir, 0777); err != nil {
 				return fmt.Errorf("failed to create directory '%s': %w", dir, err)
 			}
+		case "assure_file_access":
+			if kind != reflect.String {
+				return fmt.Errorf("sanitize tag '%s' on '%s' only works on strings", tagKeyValue[0], name)
+			}
+			filename, err := filepath.Abs(elem.String())
+			if err != nil {
+				return fmt.Errorf("wrong file name '%s': %w", elem.String(), err)
+			}
+			if _, err := os.Stat(filename); err != nil {
+				return fmt.Errorf("file '%s' does not exists or is not accessible: %w", filename, err)
+			}
 		// TODO: add more sanitize tags here when needed
 
 		case "test_call":
