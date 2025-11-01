@@ -198,12 +198,16 @@ func sanitizeValue(elem reflect.Value, name, tags string) error {
 			if kind != reflect.String {
 				return fmt.Errorf("sanitize tag '%s' on '%s' only works on strings", tagKeyValue[0], name)
 			}
-			filename, err := filepath.Abs(elem.String())
-			if err != nil {
-				return fmt.Errorf("wrong file name '%s': %w", elem.String(), err)
+			name := elem.String()
+			if len(name) == 0 {
+				return nil
 			}
-			if _, err := os.Stat(filename); err != nil {
-				return fmt.Errorf("file '%s' does not exists or is not accessible: %w", filename, err)
+			fileName, err := filepath.Abs(elem.String())
+			if err != nil {
+				return fmt.Errorf("wrong file name '%s': %w", name, err)
+			}
+			if _, err := os.Stat(fileName); err != nil {
+				return fmt.Errorf("file '%s' does not exists or is not accessible: %w", fileName, err)
 			}
 		// TODO: add more sanitize tags here when needed
 
