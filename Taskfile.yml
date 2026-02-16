@@ -73,7 +73,7 @@ tasks:
           echo
           echo "{{.TATN}}gencfg{{if (ne (clean .ITEM) ".")}} {{clean .ITEM}}{{end}} tests...{{.TOFF}}"
           echo
-          go test -mod=mod -v -coverprofile='{{.TEST_DIR}}/test_{{replace "/" "_" (clean .ITEM)}}_coverage.out' {{.CLI_ARGS}} '{{.ITEM}}'
+          go test -mod=mod -race -v -coverprofile='{{.TEST_DIR}}/test_{{replace "/" "_" (clean .ITEM)}}_coverage.out' {{.CLI_ARGS}} '{{.ITEM}}'
 
   clean:
     desc: Removes build artifacts and task's checksums

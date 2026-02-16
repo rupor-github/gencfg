@@ -1,0 +1,3 @@
+config:
+  test_env: '{{ env "GENCFG_TEST_VAR" }}'
+  with_default: '{{ default "default_value" (env "GENCFG_NONEXISTENT_VAR") }}'

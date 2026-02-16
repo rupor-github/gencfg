@@ -1,0 +1,7 @@
+level1:
+  level2:
+    level3:
+      hostname: "{{ .Hostname }}"
+      arch: "{{ .ARCH }}"
+  sibling: "{{ .OS }}"
+top_level: "{{ upper \"top\" }}"

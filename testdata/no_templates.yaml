@@ -1,0 +1,10 @@
+server:
+  host: localhost
+  port: 8080
+  debug: true
+  workers: 4
+  name: my-service
+nested:
+  list:
+    - item1
+    - item2

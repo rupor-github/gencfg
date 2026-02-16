@@ -1,0 +1,11 @@
+server:
+  host: "{{ .Hostname }}"
+  port: 8080
+  debug: true
+  name: "{{ upper \"myapp\" }}"
+  tags:
+    - static_tag
+    - dynamic_tag
+  metadata:
+    version: "1.0"
+    arch: "{{ .ARCH }}"

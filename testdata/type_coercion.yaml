@@ -1,0 +1,6 @@
+types:
+  bool_true: "{{ true }}"
+  bool_false: "{{ false }}"
+  integer: "{{ 42 }}"
+  float_val: "{{ 3.14 }}"
+  string_val: "{{ \"hello\" }}"

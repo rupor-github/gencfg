@@ -4,9 +4,39 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
+
+// sanitizeTestFunctions holds test methods callable via the test_call sanitize tag.
+type sanitizeTestFunctions struct{}
+
+// ReportTestCall is a test function that could be called by the sanitize function with the tag sanitize:"test_call=ReportTestCall".
+// Add more test methods with the same signature to sanitizeTestFunctions as needed.
+func (sanitizeTestFunctions) ReportTestCall(name, data string) error {
+	fmt.Println("ReportTestCall called with", name, data)
+	return nil
+}
+
+// invokeMethodByName calls a named method on sanitizeTestFunctions via reflection.
+func (s sanitizeTestFunctions) invokeMethodByName(methodName, paramName, paramValue string) error {
+	method := reflect.ValueOf(s).MethodByName(methodName)
+	if !method.IsValid() {
+		return fmt.Errorf("function '%s' not found for '%s', value='%s'", methodName, paramName, paramValue)
+	}
+	res := method.Call([]reflect.Value{reflect.ValueOf(paramName), reflect.ValueOf(paramValue)})
+	if len(res) > 0 && !res[0].IsNil() {
+		return res[0].Interface().(error)
+	}
+	return nil
+}
+
+func init() {
+	testCallHandler = func(methodName, paramName, paramValue string) error {
+		return sanitizeTestFunctions{}.invokeMethodByName(methodName, paramName, paramValue)
+	}
+}
 
 // NOTE: not save for multiple concurrent tests!
 var count int

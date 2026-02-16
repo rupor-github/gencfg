@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	cli "github.com/urfave/cli/v3"
 
@@ -19,6 +20,7 @@ import (
 
 const errorCode = 1
 
+// main is the entry point for the gencfg CLI tool.
 func main() {
 
 	app := &cli.Command{
@@ -35,6 +37,11 @@ func main() {
 				Name:    "literal",
 				Aliases: []string{"l"},
 				Usage:   "Name of the field(s) not to be treated as template",
+			},
+			&cli.StringSliceFlag{
+				Name:    "argument",
+				Aliases: []string{"a"},
+				Usage:   "Additional argument(s) for template expansion in key=value format",
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
@@ -60,6 +67,13 @@ func main() {
 			for _, literal := range cmd.StringSlice("literal") {
 				options = append(options, gencfg.WithDoNotExpandField(literal))
 			}
+			for _, arg := range cmd.StringSlice("argument") {
+				parts := strings.SplitN(arg, "=", 2)
+				if len(parts) != 2 || len(parts[0]) == 0 {
+					return cli.Exit(fmt.Errorf("invalid argument format %q, expected key=value", arg), errorCode)
+				}
+				options = append(options, gencfg.WithArgument(parts[0], parts[1]))
+			}
 
 			cnf, err := gencfg.Process(tmpl, options...)
 			if err != nil {
@@ -77,6 +91,11 @@ func main() {
 			_, err = io.Copy(cnfFile, bytes.NewBuffer(cnf))
 			if err != nil {
 				return cli.Exit(fmt.Errorf("unable to write output file: %w", err), errorCode)
+			}
+			if cnfFile != os.Stdout {
+				if err := cnfFile.Close(); err != nil {
+					return cli.Exit(fmt.Errorf("unable to close output file: %w", err), errorCode)
+				}
 			}
 			return nil
 		},

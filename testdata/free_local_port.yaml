@@ -1,0 +1,3 @@
+services:
+  http_port: "{{ freeLocalPort }}"
+  grpc_port: "{{ freeLocalPort }}"

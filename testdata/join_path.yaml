@@ -1,0 +1,3 @@
+paths:
+  simple: '{{ joinPath "usr" "local" "bin" }}'
+  with_root: '{{ joinPath .ProjectDir "config" "app.yaml" }}'

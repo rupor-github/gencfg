@@ -1,0 +1,7 @@
+server:
+  hostname: "{{ .Hostname }}"
+  arch: "{{ .ARCH }}"
+  os: "{{ .OS }}"
+  cpus: "{{ .CPUs }}"
+  project_dir: "{{ .ProjectDir }}"
+  name: "{{ .Name }}"

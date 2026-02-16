@@ -1,0 +1,4 @@
+config:
+  env: "{{ index .Arguments \"env\" }}"
+  region: "{{ index .Arguments \"region\" }}"
+  combined: "{{ index .Arguments \"env\" }}-{{ index .Arguments \"region\" }}"

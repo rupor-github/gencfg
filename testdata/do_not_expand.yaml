@@ -1,0 +1,4 @@
+config:
+  expanded: "{{ upper \"hello\" }}"
+  literal: "{{ .Hostname }}"
+  also_expanded: "{{ lower \"WORLD\" }}"

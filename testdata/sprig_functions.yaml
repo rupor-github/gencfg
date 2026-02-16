@@ -1,0 +1,8 @@
+sprig:
+  upper: "{{ upper \"hello\" }}"
+  lower: "{{ lower \"WORLD\" }}"
+  trimmed: "{{ trim \"  spaces  \" }}"
+  default_val: "{{ default \"fallback\" \"\" }}"
+  default_with_val: "{{ default \"fallback\" \"actual\" }}"
+  ternary_true: "{{ ternary \"yes\" \"no\" true }}"
+  ternary_false: "{{ ternary \"yes\" \"no\" false }}"
