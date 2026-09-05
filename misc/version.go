@@ -7,5 +7,5 @@ const (
 )
 
 func GetVersion() string {
-	return "v1.0.16"
+	return "v1.0.17"
 }

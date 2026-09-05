@@ -1,6 +1,6 @@
 module github.com/rupor-github/gencfg
 
-go 1.27.0
+go 1.27.1
 
 tool (
 	github.com/rupor-github/fork-autotag/autotag
@@ -8,7 +8,7 @@ tool (
 )
 
 require (
-	github.com/go-playground/validator/v10 v10.30.3
+	github.com/go-playground/validator/v10 v10.30.4
 	github.com/go-task/slim-sprig/v3 v3.0.0
 	github.com/urfave/cli/v3 v3.11.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -30,8 +30,8 @@ require (
 	github.com/rogpeppe/go-internal v1.16.0 // indirect
 	github.com/rupor-github/fork-autotag v1.3.38 // indirect
 	github.com/stretchr/testify v1.12.1 // indirect
-	golang.org/x/crypto v0.55.0 // indirect
-	golang.org/x/exp/typeparams v0.0.0-20260820142414-ca536658362e // indirect
+	golang.org/x/crypto v0.56.0 // indirect
+	golang.org/x/exp/typeparams v0.0.0-20260824195058-e88cd73687aa // indirect
 	golang.org/x/mod v0.40.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
